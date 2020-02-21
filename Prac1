@@ -1,0 +1,69 @@
+#Authors: Julieta Ramos /Fernanda Galeana
+#Date: 21/02/2020
+#Description: 
+#      	s0=n
+#      	s1=source peg
+#	s2=aux. peg
+#	s3=target peg
+
+.data
+.text
+Main:
+	addi $s0,$zero,4			#Initialize parameters: n, aux. for iterations and peg's addresses
+	add $s1,$zero,$s0
+	addi $a0,$zero,0x10010000
+	addi $a1,$zero,0x10010020
+	addi $a2,$zero,0x10010040
+	jal Fill				#Call function to fill the first peg
+	jal TowerofHanoi			#Call function that moves the disks
+	j Exit
+
+	
+			
+TowerofHanoi:					#Function for the Towers of Hanoi
+	beq $s1,1,Move1				#Two processes for moving disks, one for the first disk and one for the rest
+	addi $sp,$sp,-4				#Put in the stack the actual address for "return"
+	sw $ra,0($sp)
+	jal Swap1
+						#For the first disk, move the value in source to target
+Move1:	addi $a0,$a0,-4				#Decrease one place the source address to get the right position of the value
+	lw $t0,0($a0)				#Read the value inside the address
+	sw $t0,0($a2)				#Write the value in the target
+	sw $zero,0($a0)				#Write 0 in the source
+	addi $a2,$a2,4				#Increase address of target
+	jr $ra	
+		
+Swap1:	add $t0,$zero,$a2			#Search for the right target peg address swapping aux with target
+	add $a2,$zero,$a1
+	add $a1,$zero,$t0
+	addi $s1,$s1,-1				#Decrease the counter and call the function with n-1
+	jal TowerofHanoi
+						#For the rest of the disks, move the value from source to aux
+Move2:	addi $a0,$a0,-4				#(same process that Move1)
+	lw $t0,0($a0)
+	sw $t0,0($a1)
+	sw $zero,0($a0)
+	addi $a1,$a1,4
+						#Change source address with the new one (previous target), aux with prev. source and 
+Swap2:	add $t0,$zero,$a0			#and target with prev. aux (swap)
+	add $a0,$zero,$a2			
+	add $a2,$zero,$a1
+	add $a1,$zero,$t0
+	jal TowerofHanoi			#Call function 
+	
+Jump:	lw $ra,0($sp)				#Get the address in the stack to jump 
+	addi $sp,$sp,8	
+Swap3:	add $t0,$zero,$a1			#Change target with aux
+	add $a1,$zero,$a0
+	add $a0,$zero,$t0
+	addi $s1,$s1,1				#Increase n
+	jr $ra
+						#Function for filling the first tower
+Fill:	sw $s1, 0($a0)
+	addi $s1,$s1,-1
+	addi $a0,$a0,4
+	bne $s1,$zero,Fill
+	add $s1,$zero,$s0
+	jr $ra
+		
+Exit:
