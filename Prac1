@@ -12,8 +12,8 @@ Main:
 	addi $s0,$zero,4			#Initialize parameters: n, aux. for iterations and peg's addresses
 	add $s1,$zero,$s0
 	addi $a0,$zero,0x10010000
-	addi $a1,$zero,0x10010020
-	addi $a2,$zero,0x10010040
+	addi $a1,$a0,32
+	addi $a2,$a1,32
 	jal Fill				#Call function to fill the first peg
 	jal TowerofHanoi			#Call function that moves the disks
 	j Exit
