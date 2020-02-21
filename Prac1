@@ -52,7 +52,7 @@ Swap2:	add $t0,$zero,$a0			#and target with prev. aux (swap)
 	jal TowerofHanoi			#Call function 
 	
 Jump:	lw $ra,0($sp)				#Get the address in the stack to jump 
-	addi $sp,$sp,8	
+	addi $sp,$sp,4	
 Swap3:	add $t0,$zero,$a1			#Change target with aux
 	add $a1,$zero,$a0
 	add $a0,$zero,$t0
