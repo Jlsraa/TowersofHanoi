@@ -9,9 +9,11 @@
 .data
 .text
 Main:
-	addi $s0,$zero,4			#Initialize parameters: n, aux. for iterations and peg's addresses
+	
+	addi $s0,$zero,3			#Initialize parameters: n, aux. for iterations and peg's addresses
 	add $s1,$zero,$s0
-	addi $a0,$zero,0x10010000
+	lui $a0,0x1001 
+	addi $sp, $a0, 1020
 	addi $a1,$a0,32
 	addi $a2,$a1,32
 	jal Fill				#Call function to fill the first peg
@@ -59,11 +61,15 @@ Swap3:	add $t0,$zero,$a1			#Change target with aux
 	addi $s1,$s1,1				#Increase n
 	jr $ra
 						#Function for filling the first tower
-Fill:	sw $s1, 0($a0)
+Fill:	addi $sp,$sp,-4				#Put in the stack the actual address for "return"
+	sw $ra,0($sp)				#Save RA
+	sw $s1, 0($a0)
 	addi $s1,$s1,-1
 	addi $a0,$a0,4
 	bne $s1,$zero,Fill
 	add $s1,$zero,$s0
+	lw $ra,0($sp)				#Get the address in the stack to jump 
+	addi $sp,$sp,4	
 	jr $ra
 		
 Exit:
